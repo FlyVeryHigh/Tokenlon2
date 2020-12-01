@@ -1,6 +1,13 @@
-type ExampleEntity @entity {
+type Orderfill @entity {
   id: ID!
-  count: BigInt!
-  executeTxHash: Bytes! # bytes32
-  userAddr: Bytes! # address
+  filled_amount: BigInt!
+  taker: Bytes!
+  maker: Bytes!
+  timestamp: BigInt!
+  blocknumber: BigInt!
+}
+
+type Taker @entity {
+  id: ID!
+  taker_tx_count: BigInt!
 }

@@ -1,30 +1,36 @@
 import { BigInt } from "@graphprotocol/graph-ts"
 import { Contract, FillOrder } from "../generated/Contract/Contract"
-import { ExampleEntity } from "../generated/schema"
+import {Orderfill, Taker} from "../generated/schema"
 
 export function handleFillOrder(event: FillOrder): void {
   // Entities can be loaded from the store using a string ID; this ID
   // needs to be unique across all entities of the same type
-  let entity = ExampleEntity.load(event.transaction.from.toHex())
 
   // Entities only exist after they have been saved to the store;
   // `null` checks allow to create entities on demand
-  if (entity == null) {
-    entity = new ExampleEntity(event.transaction.from.toHex())
-
-    // Entity fields can be set using simple assignments
-    entity.count = BigInt.fromI32(0)
-  }
+  let entity = new Orderfill(event.transaction.hash.toHex())
 
   // BigInt and BigDecimal math are supported
-  entity.count = entity.count + BigInt.fromI32(1)
-
+  // @ts-ignore
+  entity.filled_amount = event.params.filledAmount
   // Entity fields can be set based on event parameters
-  entity.executeTxHash = event.params.executeTxHash
-  entity.userAddr = event.params.userAddr
-
+  entity.taker = event.params.userAddr
+  entity.maker = event.params.receiverAddr
+  entity.timestamp=event.block.timestamp
+  entity.blocknumber=event.block.number
   // Entities can be written to the store with `.save()`
   entity.save()
+
+  let entityT = Taker.load(event.transaction.from.toHex())
+  if (entityT == null) {
+    entityT = new Taker(event.transaction.from.toHex())
+    entityT.taker_tx_count=BigInt.fromI32(0)
+  }
+  entityT.taker_tx_count = entityT.taker_tx_count + BigInt.fromI32(1)
+  entityT.save()
+
+
+
 
   // Note: If a handler doesn't require existing field values, it is faster
   // _not_ to load the entity from the store. Instead, create it fresh with
@@ -50,3 +56,4 @@ export function handleFillOrder(event: FillOrder): void {
   // - contract.EIP712_DOMAIN_HASH(...)
   // - contract.assertTransaction(...)
 }
+
