@@ -1,0 +1,23 @@
+specVersion: 0.0.1
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: Contract
+    network: mainnet
+    source:
+      address: "0xdc6c91b569C98F9F6f74d90F9BEFF99FDAf4248b"
+      abi: Contract
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.2
+      language: wasm/assemblyscript
+      entities:
+        - FillOrder
+      abis:
+        - name: Contract
+          file: ./abis/Contract.json
+      eventHandlers:
+        - event: FillOrder(indexed bytes32,indexed address,address,uint256,uint256)
+          handler: handleFillOrder
+      file: ./src/mapping.ts

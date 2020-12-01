@@ -1,0 +1,16 @@
+{
+  "name": "tokenlon2",
+  "license": "UNLICENSED",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ flyveryhigh/tokenlon2",
+    "create-local": "graph create --node http://localhost:8020/ flyveryhigh/tokenlon2",
+    "remove-local": "graph remove --node http://localhost:8020/ flyveryhigh/tokenlon2",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 flyveryhigh/tokenlon2"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.19.0",
+    "@graphprotocol/graph-ts": "0.19.0"
+  }
+}
