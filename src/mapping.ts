@@ -1,33 +1,40 @@
 import { BigInt } from "@graphprotocol/graph-ts"
 import { Contract, FillOrder } from "../generated/Contract/Contract"
-import {Orderfill, Taker} from "../generated/schema"
+import {Orderfill, User} from "../generated/schema"
 
 export function handleFillOrder(event: FillOrder): void {
-  // Entities can be loaded from the store using a string ID; this ID
-  // needs to be unique across all entities of the same type
 
-  // Entities only exist after they have been saved to the store;
-  // `null` checks allow to create entities on demand
+  let entityT = User.load(event.params.userAddr.toHex())
+  if (entityT == null) {
+    entityT = new User(event.transaction.from.toHex())
+    entityT.tradesTxCount = BigInt.fromI32(0)
+  }
+  entityT.tradesTxCount = entityT.tradesTxCount + BigInt.fromI32(1)
+  entityT.save()
+
+  let entityM = User.load(event.params.userAddr.toHex())
+  if (entityM == null) {
+    entityM = new User(event.transaction.from.toHex())
+    entityM.tradesTxCount = BigInt.fromI32(0)
+  }
+  entityM.tradesTxCount = entityM.tradesTxCount + BigInt.fromI32(1)
+  entityM.save()
+
+
   let entity = new Orderfill(event.transaction.hash.toHex())
 
   // BigInt and BigDecimal math are supported
   // @ts-ignore
-  entity.filled_amount = event.params.filledAmount
+  entity.filledAmount = event.params.filledAmount
   // Entity fields can be set based on event parameters
-  entity.taker = event.params.userAddr
-  entity.maker = event.params.receiverAddr
-  entity.timestamp=event.block.timestamp
-  entity.blocknumber=event.block.number
+  entity.taker = event.params.userAddr.toHex()
+  entity.maker = event.params.receiverAddr.toHex()
+  entity.timestamp = event.block.timestamp
+  entity.blocknumber = event.block.number
   // Entities can be written to the store with `.save()`
   entity.save()
+}
 
-  let entityT = Taker.load(event.transaction.from.toHex())
-  if (entityT == null) {
-    entityT = new Taker(event.transaction.from.toHex())
-    entityT.taker_tx_count=BigInt.fromI32(0)
-  }
-  entityT.taker_tx_count = entityT.taker_tx_count + BigInt.fromI32(1)
-  entityT.save()
 
 
 
@@ -55,5 +62,4 @@ export function handleFillOrder(event: FillOrder): void {
   // - contract.owner(...)
   // - contract.EIP712_DOMAIN_HASH(...)
   // - contract.assertTransaction(...)
-}
 

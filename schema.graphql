@@ -1,13 +1,25 @@
 type Orderfill @entity {
+  "Executed trades"
   id: ID!
-  filled_amount: BigInt!
-  taker: Bytes!
-  maker: Bytes!
+  "Filled trade amount"
+  filledAmount: BigInt!
+  "Taker"
+  taker: User
+  "Maker"
+  maker: User
+  "Timestamp of trade tx"
   timestamp: BigInt!
+  "Block number of trade tx"
   blocknumber: BigInt!
 }
 
-type Taker @entity {
+type User @entity {
+  "Trader"
   id: ID!
-  taker_tx_count: BigInt!
+  "Quantity of user's trades"
+  tradesTxCount: BigInt!
+  "User's executed take orders"
+  takerTrades:[Orderfill!]! @derivedFrom(field: "taker")
+  "User's executed make orders"
+  makerTrades:[Orderfill!]! @derivedFrom(field: "maker")
 }
